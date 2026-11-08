@@ -93,7 +93,7 @@ loads along the y direction.
 For the practice problem, there is only a -25N vertical force on the joint
 D.
 %}
-L = [0 0 0 0 0 0 0 0 0 0 0 -25 0 0 0 0];
+L = [0 0 0 0 0 0 0 0 0 0 0 25 0 0 0 0];
 L = L.';
 
 %% Save the file to a .mat binary file

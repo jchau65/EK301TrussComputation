@@ -15,8 +15,9 @@ eRows = numJoints * 2;
 eCols = numMembers + numSupportForces;
 e = zeros(eRows, eCols);
 
-% Other vars for output
-totalLen = 0.0;
+% storage for the member length -- filled in by the for loop 
+% later used for max load calculations
+memLength = zeros(numMembers, 1);
 
 % Iterate through the part of e without the support forces
 for i = 1:numMembers
@@ -37,7 +38,7 @@ for i = 1:numMembers
 
     % calculate a distance value using defined points P1 and P2
     distance = norm(P1 - P2);
-    totalLen = totalLen+distance;
+    memLength(i) = distance; 
 
     % put into e matrix
     e(jointB, i) = deltaX/distance;
@@ -51,7 +52,27 @@ e(1:numJoints, (numMembers + 1):(numMembers+numSupportForces)) = Sx;
 e((numJoints+1):(numJoints*2), (numMembers + 1):(numMembers+numSupportForces)) = Sy;
 
 %% Calculate the force
-F = e \ (-L);
+F = e \ (L);
+
+%% Calculating the maximum theoretical load
+% buckling curve for the acrylic (provided in the manual)
+Cfit = 3391.3; alpha = 2.012; Ufit = 1.52;
+
+W = sum(abs(L)); % applied test load as a magnitude -- not really need for
+                 % something that is just one applied load but this extends
+                 % the usage cases of our computational model
+R = F(1:numMembers) / W; % calculates the ratio of internal force to 
+                         % applied load for every member
+Fb = Cfit * memLength.^(-alpha); % creates a vector with all buckling forces
+
+% Ideally, tension members never fail relative to compression members, so 
+% we set the buckling force of those to infinity in the computation
+Wfail = inf(numMembers, 1); 
+comp = R < 0; % gets the indices of the compression members
+Wfail(comp) = Fb(comp) ./ (-R(comp)); % calculates the failure force for each member
+
+[Wmax, crit] = min(Wfail); % gets the critical failure force and critical member
+W_uncertainty = Ufit / abs(R(crit));
 
 %% Save and Write to output
 %save('TrussDesign1_JackiePeggyZhixin_A3.mat','C','Sx','Sy','X','Y','L');
@@ -121,13 +142,13 @@ end
 
 % print prices ============================================================
 %totalLen = totalLen*39.3701; % inches to meters
-cost = totalLen+10*numJoints;
+cost = sum(memLength)+10*numJoints;
 cost = round(cost, 3, "significant");
 costline = ['Cost of truss: $', num2str(cost), '\n'];
 fprintf(fileID, costline);
 
 
-mlcr = max(abs(L))/cost;
+mlcr = Wmax/cost;
 mlcr = round(mlcr, 3, "significant");
 mlcrLine = ['Theoretical max load/cost ratio in oz/$: ', num2str(mlcr), '\n'];
 fprintf(fileID, mlcrLine);
