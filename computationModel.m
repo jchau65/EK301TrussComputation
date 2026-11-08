@@ -51,7 +51,7 @@ e(1:numJoints, (numMembers + 1):(numMembers+numSupportForces)) = Sx;
 e((numJoints+1):(numJoints*2), (numMembers + 1):(numMembers+numSupportForces)) = Sy;
 
 %% Calculate the force
-F = e \ (-L)
+F = e \ (-L);
 
 %% Save and Write to output
 %save('TrussDesign1_JackiePeggyZhixin_A3.mat','C','Sx','Sy','X','Y','L');
@@ -79,7 +79,7 @@ Sxs = Sx(Sx ~= 0);
 Sys = Sy(Sy ~= 0);
 numFs = length(F)-length(Sxs)-length(Sys);
 
-% memeber forces
+% member forces
 for i = 1:numFs
     
 
@@ -123,11 +123,11 @@ end
 %totalLen = totalLen*39.3701; % inches to meters
 cost = totalLen+10*numJoints;
 cost = round(cost, 3, "significant");
-costline = ['Cost of truss: $', num2str(cost), '\n']
+costline = ['Cost of truss: $', num2str(cost), '\n'];
 fprintf(fileID, costline);
 
 
 mlcr = max(abs(L))/cost;
 mlcr = round(mlcr, 3, "significant");
-mlcrLine = ['Theoretical max load/cost ratio in m/$: ', num2str(mlcr), '\n'];
+mlcrLine = ['Theoretical max load/cost ratio in oz/$: ', num2str(mlcr), '\n'];
 fprintf(fileID, mlcrLine);
