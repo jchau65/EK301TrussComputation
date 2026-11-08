@@ -1,4 +1,7 @@
-load("LuluDesign1.mat")
+fileInput = 'JackieTrussDesign.mat';
+[~, fileName, ~] = fileparts(fileInput);
+
+load(fileName)
 
 numMembers = size(C, 2); % number of members
 numJoints = size(C, 1); % number of joints
@@ -52,7 +55,8 @@ F = e \ (-L)
 
 %% Save and Write to output
 %save('TrussDesign1_JackiePeggyZhixin_A3.mat','C','Sx','Sy','X','Y','L');
-fileID = fopen('LuluDeisgn1Results.txt', 'w');
+fileOutput = [fileName '.txt'];
+fileID = fopen(fileOutput, 'w');
 
 fprintf(fileID, 'EK301, Section A3, Group 7: Jackie C., Peggy W., Zhixin J. 11/7/2026.\n');
 
