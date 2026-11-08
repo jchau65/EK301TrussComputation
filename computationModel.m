@@ -120,7 +120,7 @@ for i = start:ending
 end
 
 % print prices ============================================================
-totalLen = totalLen*39.3701;
+%totalLen = totalLen*39.3701; % inches to meters
 cost = totalLen+10*numJoints;
 cost = round(cost, 3, "significant");
 costline = ['Cost of truss: $', num2str(cost), '\n']
